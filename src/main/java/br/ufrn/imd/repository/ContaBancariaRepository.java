@@ -7,8 +7,7 @@ import java.util.Set;
 public interface ContaBancariaRepository {
 
     Set<ContaBancaria> findAll();
-
     ContaBancaria findByNumero(String numero);
-
+    boolean existsByNumero(String numero);
     void save(ContaBancaria conta);
 }
