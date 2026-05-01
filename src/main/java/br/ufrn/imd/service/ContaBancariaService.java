@@ -7,7 +7,7 @@ import br.ufrn.imd.repository.ContaBancariaRepositoryImpl;
 
 public class ContaBancariaService {
 
-    ContaBancariaRepository repository;
+    private ContaBancariaRepository repository;
 
     public ContaBancariaService() {
         repository = ContaBancariaRepositoryImpl.getInstance();
@@ -30,4 +30,31 @@ public class ContaBancariaService {
         conta.setSaldo(conta.getSaldo() + valor);
         repository.save(conta);
     }
+
+    public void transferir(String numeroContaOrigem, String numeroContaDestino, Double valor) {
+        verificarValidadeValor(valor);
+
+        ContaBancaria contaOrigem = verificarContaExistente(numeroContaOrigem);
+        ContaBancaria contaDestino = verificarContaExistente(numeroContaDestino);
+
+        contaOrigem.setSaldo(contaOrigem.getSaldo() - valor);
+        contaDestino.setSaldo(contaDestino.getSaldo() + valor);
+    }
+
+    private void verificarValidadeValor(Double valor) {
+        if (valor <= 0) {
+            throw new IllegalArgumentException("Valor deve ser maior que zero");
+        }
+    }
+
+    private ContaBancaria verificarContaExistente(String numeroConta) {
+        ContaBancaria conta = repository.findByNumero(numeroConta);
+
+        if (conta == null) {
+            throw new ContaBancariaNaoEncontradaException();
+        }
+
+        return conta;
+    }
+
 }
