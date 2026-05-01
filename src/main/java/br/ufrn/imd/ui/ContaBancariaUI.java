@@ -94,7 +94,13 @@ public class ContaBancariaUI {
     }
 
     private static void consultarSaldo() {
+        System.out.println("\n=== CONSULTAR SALDO ===");
 
+        System.out.print("Número da conta: ");
+        String numeroConta = scanner.nextLine();
+
+        double saldo = contaBancariaService.consultarSaldo(numeroConta);
+        System.out.println("Saldo da conta: " + saldo);
     }
 
     private static void transferir() {
@@ -116,7 +122,14 @@ public class ContaBancariaUI {
     }
 
     private static void criarConta() {
+        System.out.println("\n=== CRIAR CONTA ===");
 
+        System.out.print("Número da conta: ");
+        String numeroConta = scanner.nextLine();
+
+        contaBancariaService.cadastrarConta(numeroConta);
+
+        System.out.println("Conta criada com sucesso!");
     }
 
     public static void printMenu() {
