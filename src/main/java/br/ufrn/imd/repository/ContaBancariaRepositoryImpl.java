@@ -39,4 +39,8 @@ public class ContaBancariaRepositoryImpl implements ContaBancariaRepository {
     public void save(ContaBancaria conta) {
         contas.add(conta);
     }
+
+    public boolean existsByNumero(String numero) {
+        return contas.stream().anyMatch(c -> c.getNumero().equals(numero));
+    }
 }
