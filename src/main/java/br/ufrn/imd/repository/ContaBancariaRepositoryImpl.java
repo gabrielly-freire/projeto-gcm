@@ -2,6 +2,7 @@ package br.ufrn.imd.repository;
 
 import br.ufrn.imd.model.ContaBancaria;
 
+import java.util.HashSet;
 import java.util.Set;
 
 public class ContaBancariaRepositoryImpl implements ContaBancariaRepository {
@@ -17,11 +18,11 @@ public class ContaBancariaRepositoryImpl implements ContaBancariaRepository {
         return instance;
     }
 
-    private Set<ContaBancaria> contas = Set.of(
+    private Set<ContaBancaria> contas = new HashSet<>(Set.of(
             new ContaBancaria("123456789"),
             new ContaBancaria("987654321"),
             new ContaBancaria("111111111")
-    );
+    ));
 
     public Set<ContaBancaria> findAll() {
         return contas;
