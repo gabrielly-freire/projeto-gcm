@@ -2,6 +2,7 @@ package br.ufrn.imd.ui;
 
 import br.ufrn.imd.exception.ContaBancariaNaoEncontradaException;
 import br.ufrn.imd.exception.NumeroContaIndisponivel;
+import br.ufrn.imd.exception.SaldoInsuficienteException;
 import br.ufrn.imd.service.ContaBancariaService;
 
 import java.util.Scanner;
@@ -52,6 +53,8 @@ public class ContaBancariaUI {
             } catch (ContaBancariaNaoEncontradaException e) {
                 System.out.println("Conta bancária não encontrada.");
             } catch (NumeroContaIndisponivel e) {
+                System.out.println(e.getMessage());
+            } catch (SaldoInsuficienteException e) {
                 System.out.println(e.getMessage());
             } catch (IllegalArgumentException e) {
                 System.out.println(e.getMessage());
