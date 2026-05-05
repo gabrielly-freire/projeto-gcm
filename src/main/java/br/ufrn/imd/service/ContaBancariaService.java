@@ -2,6 +2,7 @@ package br.ufrn.imd.service;
 
 import br.ufrn.imd.exception.ContaBancariaNaoEncontradaException;
 import br.ufrn.imd.exception.ContaJaCadastradaException;
+import br.ufrn.imd.exception.SaldoInsuficienteException;
 import br.ufrn.imd.model.ContaBancaria;
 import br.ufrn.imd.repository.ContaBancariaRepository;
 import br.ufrn.imd.repository.ContaBancariaRepositoryImpl;
@@ -30,29 +31,23 @@ public class ContaBancariaService {
     }
 
     public double consultarSaldo(String numeroConta){
-        ContaBancaria conta = repository.findByNumero(numeroConta);
-
-        if (conta == null) {
-            throw new ContaBancariaNaoEncontradaException();
-        }
+        ContaBancaria conta = verificarContaExistente(numeroConta);
 
         return conta.getSaldo();
     }
 
     public void debitar(String numeroConta, double valor){
-        ContaBancaria conta = repository.findByNumero(numeroConta);
-        if (conta == null){
-            throw new ContaBancariaNaoEncontradaException();
-        }
+        ContaBancaria conta = verificarContaExistente(numeroConta);
+
+        verificarSaldoBancarioSuficiente(conta, valor);
+
         conta.setSaldo(conta.getSaldo() - valor);
         repository.save(conta);
     }
 
     public void creditar(String numeroConta, double valor){
-        ContaBancaria conta = repository.findByNumero(numeroConta);
-        if (conta == null){
-            throw new ContaBancariaNaoEncontradaException();
-        }
+        ContaBancaria conta = verificarContaExistente(numeroConta);
+
         conta.setSaldo(conta.getSaldo() + valor);
         repository.save(conta);
     }
@@ -63,6 +58,8 @@ public class ContaBancariaService {
         ContaBancaria contaOrigem = verificarContaExistente(numeroContaOrigem);
         ContaBancaria contaDestino = verificarContaExistente(numeroContaDestino);
 
+        verificarSaldoBancarioSuficiente(contaOrigem, valor);
+
         contaOrigem.setSaldo(contaOrigem.getSaldo() - valor);
         contaDestino.setSaldo(contaDestino.getSaldo() + valor);
     }
@@ -70,6 +67,12 @@ public class ContaBancariaService {
     private void verificarValidadeValor(Double valor) {
         if (valor <= 0) {
             throw new IllegalArgumentException("Valor deve ser maior que zero");
+        }
+    }
+
+    private void verificarSaldoBancarioSuficiente(ContaBancaria contaBancaria, double valor) {
+        if (valor > contaBancaria.getSaldo()) {
+            throw new SaldoInsuficienteException();
         }
     }
 
