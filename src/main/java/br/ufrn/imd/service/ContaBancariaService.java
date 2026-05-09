@@ -1,86 +1,72 @@
 package br.ufrn.imd.service;
 
-import br.ufrn.imd.exception.ContaBancariaNaoEncontradaException;
+import br.ufrn.imd.exception.ContaNaoEncontradaException;
 import br.ufrn.imd.exception.ContaJaCadastradaException;
 import br.ufrn.imd.model.ContaBancaria;
+import br.ufrn.imd.model.ContaPoupanca;
 import br.ufrn.imd.repository.ContaBancariaRepository;
-import br.ufrn.imd.repository.ContaBancariaRepositoryImpl;
 
 public class ContaBancariaService {
 
     private ContaBancariaRepository repository;
 
     public ContaBancariaService() {
-        repository = ContaBancariaRepositoryImpl.getInstance();
+        this.repository = ContaBancariaRepository.getInstance();
     }
 
-    public void cadastrarConta(String numero){
+    public void cadastrarConta(String numero) {
         if (numero == null || numero.trim().isEmpty()) {
             throw new IllegalArgumentException("Número da conta é obrigatório.");
         }
-
         if (repository.existsByNumero(numero)) {
             throw new ContaJaCadastradaException(numero);
         }
-
         ContaBancaria novaConta = new ContaBancaria(numero);
-        novaConta.setSaldo(0.0);
-
         repository.save(novaConta);
     }
 
-    public double consultarSaldo(String numeroConta){
-        ContaBancaria conta = repository.findByNumero(numeroConta);
-
-        if (conta == null) {
-            throw new ContaBancariaNaoEncontradaException();
-        }
-
-        return conta.getSaldo();
+    public double consultarSaldo(String numeroConta) {
+        return verificarContaExistente(numeroConta).getSaldo();
     }
 
-    public void debitar(String numeroConta, double valor){
-        ContaBancaria conta = repository.findByNumero(numeroConta);
-        if (conta == null){
-            throw new ContaBancariaNaoEncontradaException();
+    public void debitar(String numeroConta, double valor) {
+        ContaBancaria conta = verificarContaExistente(numeroConta);
+        if (valor > conta.getSaldo()) {
+            throw new IllegalArgumentException("Saldo insuficiente.");
         }
         conta.setSaldo(conta.getSaldo() - valor);
         repository.save(conta);
     }
 
-    public void creditar(String numeroConta, double valor){
-        ContaBancaria conta = repository.findByNumero(numeroConta);
-        if (conta == null){
-            throw new ContaBancariaNaoEncontradaException();
-        }
+    public void creditar(String numeroConta, double valor) {
+        ContaBancaria conta = verificarContaExistente(numeroConta);
         conta.setSaldo(conta.getSaldo() + valor);
         repository.save(conta);
     }
 
-    public void transferir(String numeroContaOrigem, String numeroContaDestino, Double valor) {
-        verificarValidadeValor(valor);
+    public void transferir(String origem, String destino, double valor) {
+        if (valor <= 0) throw new IllegalArgumentException("Valor inválido.");
+        
+        ContaBancaria contaOrigem = verificarContaExistente(origem);
+        ContaBancaria contaDestino = verificarContaExistente(destino);
 
-        ContaBancaria contaOrigem = verificarContaExistente(numeroContaOrigem);
-        ContaBancaria contaDestino = verificarContaExistente(numeroContaDestino);
+        if (contaOrigem.getSaldo() < valor) throw new IllegalArgumentException("Saldo insuficiente.");
 
         contaOrigem.setSaldo(contaOrigem.getSaldo() - valor);
         contaDestino.setSaldo(contaDestino.getSaldo() + valor);
+
+        repository.save(contaOrigem);
+        repository.save(contaDestino);
     }
 
-    private void verificarValidadeValor(Double valor) {
-        if (valor <= 0) {
-            throw new IllegalArgumentException("Valor deve ser maior que zero");
-        }
+    public boolean isContaPoupanca(String numeroConta) {
+        ContaBancaria conta = repository.findByNumero(numeroConta);
+        return conta instanceof ContaPoupanca;
     }
 
     private ContaBancaria verificarContaExistente(String numeroConta) {
         ContaBancaria conta = repository.findByNumero(numeroConta);
-
-        if (conta == null) {
-            throw new ContaBancariaNaoEncontradaException();
-        }
-
+        if (conta == null) throw new ContaNaoEncontradaException();
         return conta;
     }
-
 }
