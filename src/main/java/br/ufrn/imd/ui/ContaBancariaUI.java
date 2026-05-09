@@ -2,6 +2,7 @@ package br.ufrn.imd.ui;
 
 import br.ufrn.imd.exception.ContaNaoEncontradaException;
 import br.ufrn.imd.service.ContaBancariaService;
+import br.ufrn.imd.service.ContaBonusService;
 import br.ufrn.imd.service.ContaPoupancaService;
 
 import java.util.Scanner;
@@ -11,6 +12,7 @@ public class ContaBancariaUI {
     private static final Scanner scanner = new Scanner(System.in);
     private static final ContaBancariaService bancarioService = new ContaBancariaService();
     private static final ContaPoupancaService poupancaService = new ContaPoupancaService();
+    private static final ContaBonusService bonusService = new ContaBonusService();
 
     public static void main(String[] args) {
         int opcao;
@@ -18,7 +20,7 @@ public class ContaBancariaUI {
         do {
             printMenu();
             opcao = scanner.nextInt();
-            scanner.nextLine(); // Limpar buffer
+            scanner.nextLine();
 
             try {
                 switch (opcao) {
@@ -74,6 +76,11 @@ public class ContaBancariaUI {
 
         double saldo = bancarioService.consultarSaldo(numero);
         System.out.println("Saldo atual: R$ " + saldo);
+
+        if (bancarioService.isContaBonus(numero)) {
+        int pontos = bancarioService.getPontuacao(numero); 
+        System.out.println("Pontuação atual: " + pontos + " pontos");
+        }
     }
 
     private static void transferir() {
@@ -96,7 +103,7 @@ public class ContaBancariaUI {
         System.out.print("Número da nova conta: ");
         String numero = scanner.nextLine();
         
-        System.out.print("Tipo da conta (1 - Corrente, 2 - Poupança): ");
+        System.out.print("Tipo da conta (1 - Bancaria, 2 - Poupança, 3 - Bonus): ");
         int tipo = scanner.nextInt();
         scanner.nextLine();
 
@@ -106,6 +113,9 @@ public class ContaBancariaUI {
         } else if (tipo == 2) {
             poupancaService.cadastrarContaPoupanca(numero);
             System.out.println("Conta Poupança criada com sucesso!");
+        } else if (tipo == 3) {
+            bonusService.cadastrarContaBonus(numero);
+            System.out.println("Conta Bonus criada com sucesso!");
         } else {
             System.out.println("Tipo de conta inválido. Operação cancelada.");
         }
