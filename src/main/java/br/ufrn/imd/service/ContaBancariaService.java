@@ -3,12 +3,14 @@ package br.ufrn.imd.service;
 import br.ufrn.imd.exception.ContaNaoEncontradaException;
 import br.ufrn.imd.exception.ContaJaCadastradaException;
 import br.ufrn.imd.model.ContaBancaria;
+import br.ufrn.imd.model.ContaBonus;
 import br.ufrn.imd.model.ContaPoupanca;
 import br.ufrn.imd.repository.ContaBancariaRepository;
 
 public class ContaBancariaService {
 
     private ContaBancariaRepository repository;
+    private ContaBonusService bonusService = new ContaBonusService();
 
     public ContaBancariaService() {
         this.repository = ContaBancariaRepository.getInstance();
@@ -42,6 +44,7 @@ public class ContaBancariaService {
         ContaBancaria conta = verificarContaExistente(numeroConta);
         conta.setSaldo(conta.getSaldo() + valor);
         repository.save(conta);
+        bonusService.processarBonusDeposito(numeroConta, valor);
     }
 
     public void transferir(String origem, String destino, double valor) {
@@ -57,11 +60,25 @@ public class ContaBancariaService {
 
         repository.save(contaOrigem);
         repository.save(contaDestino);
+        bonusService.processarBonusTransferencia(destino, valor);
     }
 
     public boolean isContaPoupanca(String numeroConta) {
         ContaBancaria conta = repository.findByNumero(numeroConta);
         return conta instanceof ContaPoupanca;
+    }
+
+    public boolean isContaBonus(String numeroConta) {
+        ContaBancaria conta = repository.findByNumero(numeroConta);
+        return conta instanceof ContaBonus;
+    }
+
+    public int getPontuacao(String numeroConta) {
+        ContaBancaria conta = repository.findByNumero(numeroConta);
+        if (conta instanceof ContaBonus) {
+            return ((ContaBonus) conta).getPontuacao();
+        }
+        throw new IllegalArgumentException("A conta não é do tipo Bonus.");
     }
 
     private ContaBancaria verificarContaExistente(String numeroConta) {
