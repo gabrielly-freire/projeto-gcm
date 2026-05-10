@@ -39,6 +39,8 @@ public class ContaBancariaService {
     public void debitar(String numeroConta, double valor){
         ContaBancaria conta = verificarContaExistente(numeroConta);
 
+        verificarValidadeValor(valor);
+
         verificarSaldoBancarioSuficiente(conta, valor);
 
         conta.setSaldo(conta.getSaldo() - valor);
@@ -47,6 +49,8 @@ public class ContaBancariaService {
 
     public void creditar(String numeroConta, double valor){
         ContaBancaria conta = verificarContaExistente(numeroConta);
+
+        verificarValidadeValor(valor);
 
         conta.setSaldo(conta.getSaldo() + valor);
         repository.save(conta);
