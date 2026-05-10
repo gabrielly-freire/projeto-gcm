@@ -1,9 +1,9 @@
 package br.ufrn.imd.ui;
 
-import br.ufrn.imd.exception.ContaNaoEncontradaException;
+import br.ufrn.imd.exception.ContaBancariaNaoEncontradaException;
+import br.ufrn.imd.exception.ContaJaCadastradaException;
+import br.ufrn.imd.exception.SaldoInsuficienteException;
 import br.ufrn.imd.service.ContaBancariaService;
-import br.ufrn.imd.service.ContaBonusService;
-import br.ufrn.imd.service.ContaPoupancaService;
 
 import java.util.Scanner;
 
@@ -11,8 +11,6 @@ public class ContaBancariaUI {
 
     private static final Scanner scanner = new Scanner(System.in);
     private static final ContaBancariaService bancarioService = new ContaBancariaService();
-    private static final ContaPoupancaService poupancaService = new ContaPoupancaService();
-    private static final ContaBonusService bonusService = new ContaBonusService();
 
     public static void main(String[] args) {
         int opcao;
@@ -33,13 +31,16 @@ public class ContaBancariaUI {
                     case 0 -> System.out.println("Saindo do sistema...");
                     default -> System.out.println("Opção inválida!");
                 }
-            } catch (ContaNaoEncontradaException e) {
+            } catch (ContaBancariaNaoEncontradaException e) {
                 System.out.println("Erro: Conta não encontrada no sistema.");
+            } catch (SaldoInsuficienteException e) {
+                System.out.println("Erro: " + e.getMessage());
+            } catch (ContaJaCadastradaException e) {
+                System.out.println("Erro: " + e.getMessage());
             } catch (IllegalArgumentException e) {
                 System.out.println("Erro de validação: " + e.getMessage());
             } catch (Exception e) {
-                System.out.println("Erro inesperado: " + e.getMessage());
-                e.printStackTrace();
+                System.out.println("Erro inesperado. Tente novamente.");
             }
 
         } while (opcao != 0);
@@ -107,15 +108,13 @@ public class ContaBancariaUI {
         int tipo = scanner.nextInt();
         scanner.nextLine();
 
+        bancarioService.cadastrarConta(numero, tipo);
         if (tipo == 1) {
-            bancarioService.cadastrarConta(numero);
             System.out.println("Conta Corrente criada com sucesso!");
         } else if (tipo == 2) {
-            poupancaService.cadastrarContaPoupanca(numero);
             System.out.println("Conta Poupança criada com sucesso!");
         } else if (tipo == 3) {
-            bonusService.cadastrarContaBonus(numero);
-            System.out.println("Conta Bonus criada com sucesso!");
+            System.out.println("Conta Bônus criada com sucesso!");
         } else {
             System.out.println("Tipo de conta inválido. Operação cancelada.");
         }
@@ -130,8 +129,8 @@ public class ContaBancariaUI {
             System.out.print("Taxa de juros (ex: 0.01 para 1%): ");
             double taxa = scanner.nextDouble();
             scanner.nextLine();
-            
-            poupancaService.renderJuros(numero, taxa);
+
+            bancarioService.renderJuros(numero, taxa);
             System.out.println("Rendimento aplicado com sucesso!");
         } else {
             System.out.println("Operação negada: Esta conta não é do tipo Poupança.");

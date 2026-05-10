@@ -19,9 +19,9 @@ public class ContaBancariaRepositoryImpl implements ContaBancariaRepository {
     }
 
     private Set<ContaBancaria> contas = new HashSet<>(Set.of(
-            new ContaBancaria("123456789"),
-            new ContaBancaria("987654321"),
-            new ContaBancaria("111111111")
+            new ContaBancaria("123"),
+            new ContaBancaria("456"),
+            new ContaBancaria("678")
     ));
 
     public Set<ContaBancaria> findAll() {
@@ -38,6 +38,9 @@ public class ContaBancariaRepositoryImpl implements ContaBancariaRepository {
     }
 
     public void save(ContaBancaria conta) {
+        if (contas.contains(conta)) {
+        contas.remove(conta);
+    }
         contas.add(conta);
     }
 

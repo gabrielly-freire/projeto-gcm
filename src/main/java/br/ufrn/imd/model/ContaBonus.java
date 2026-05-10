@@ -14,6 +14,23 @@ public class ContaBonus extends ContaBancaria {
     }
 
     public void adicionarPontos(int pontos) {
+        if (pontos <= 0) {
+            return;
+        }
         this.pontuacao += pontos;
+    }
+
+    @Override
+    public void creditar(double valor) {
+        super.creditar(valor);
+        adicionarPontos((int) (valor / 100));
+    }
+
+    @Override
+    public void transferirPara(ContaBancaria destino, double valor) {
+        this.setSaldo(this.getSaldo() - valor);
+        destino.setSaldo(destino.getSaldo() + valor);
+
+        adicionarPontos((int) (valor / 200));
     }
 }
