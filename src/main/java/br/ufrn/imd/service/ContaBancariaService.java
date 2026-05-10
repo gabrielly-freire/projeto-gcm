@@ -40,50 +40,47 @@ public class ContaBancariaService {
         repository.save(conta);
     }
 
-    public void creditar(String numeroConta, double valor) {
+    public void creditar(String numeroConta, double valor){
         ContaBancaria conta = verificarContaExistente(numeroConta);
+
+        verificarValidadeValor(valor);
+
         conta.setSaldo(conta.getSaldo() + valor);
         repository.save(conta);
-        bonusService.processarBonusDeposito(numeroConta, valor);
     }
 
-    public void transferir(String origem, String destino, double valor) {
-        if (valor <= 0) throw new IllegalArgumentException("Valor inválido.");
-        
-        ContaBancaria contaOrigem = verificarContaExistente(origem);
-        ContaBancaria contaDestino = verificarContaExistente(destino);
+    public void transferir(String numeroContaOrigem, String numeroContaDestino, Double valor) {
+        verificarValidadeValor(valor);
 
-        if (contaOrigem.getSaldo() < valor) throw new IllegalArgumentException("Saldo insuficiente.");
+        ContaBancaria contaOrigem = verificarContaExistente(numeroContaOrigem);
+        ContaBancaria contaDestino = verificarContaExistente(numeroContaDestino);
+
+        verificarSaldoBancarioSuficiente(contaOrigem, valor);
 
         contaOrigem.setSaldo(contaOrigem.getSaldo() - valor);
         contaDestino.setSaldo(contaDestino.getSaldo() + valor);
-
-        repository.save(contaOrigem);
-        repository.save(contaDestino);
-        bonusService.processarBonusTransferencia(destino, valor);
     }
 
-    public boolean isContaPoupanca(String numeroConta) {
-        ContaBancaria conta = repository.findByNumero(numeroConta);
-        return conta instanceof ContaPoupanca;
-    }
-
-    public boolean isContaBonus(String numeroConta) {
-        ContaBancaria conta = repository.findByNumero(numeroConta);
-        return conta instanceof ContaBonus;
-    }
-
-    public int getPontuacao(String numeroConta) {
-        ContaBancaria conta = repository.findByNumero(numeroConta);
-        if (conta instanceof ContaBonus) {
-            return ((ContaBonus) conta).getPontuacao();
+    private void verificarValidadeValor(Double valor) {
+        if (valor <= 0) {
+            throw new IllegalArgumentException("Valor deve ser maior que zero");
         }
-        throw new IllegalArgumentException("A conta não é do tipo Bonus.");
+    }
+
+    private void verificarSaldoBancarioSuficiente(ContaBancaria contaBancaria, double valor) {
+        if (valor > contaBancaria.getSaldo()) {
+            throw new SaldoInsuficienteException();
+        }
     }
 
     private ContaBancaria verificarContaExistente(String numeroConta) {
         ContaBancaria conta = repository.findByNumero(numeroConta);
-        if (conta == null) throw new ContaNaoEncontradaException();
+
+        if (conta == null) {
+            throw new ContaBancariaNaoEncontradaException();
+        }
+
         return conta;
     }
+
 }
