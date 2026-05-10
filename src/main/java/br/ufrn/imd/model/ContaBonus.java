@@ -28,7 +28,9 @@ public class ContaBonus extends ContaBancaria {
 
     @Override
     public void transferirPara(ContaBancaria destino, double valor) {
-        super.transferirPara(destino, valor);
+        this.setSaldo(this.getSaldo() - valor);
+        destino.setSaldo(destino.getSaldo() + valor);
+
         adicionarPontos((int) (valor / 200));
     }
 }
