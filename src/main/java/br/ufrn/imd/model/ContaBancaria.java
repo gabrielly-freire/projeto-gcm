@@ -12,6 +12,11 @@ public class ContaBancaria {
         this.saldo = 0.0;
     }
 
+    public ContaBancaria(String numero, Double saldo) {
+        this.numero = numero;
+        this.saldo = saldo;
+    }
+
     public String getNumero() {
         return numero;
     }

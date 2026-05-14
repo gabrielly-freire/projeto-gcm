@@ -2,8 +2,8 @@ package br.ufrn.imd.model;
 
 public class ContaPoupanca extends ContaBancaria {
     
-    public ContaPoupanca(String numero) {
-        super(numero);
+    public ContaPoupanca(String numero, double saldo) {
+        super(numero, saldo);
     }
     
     public void renderJuros(double taxa) {
