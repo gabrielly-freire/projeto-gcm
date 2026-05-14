@@ -17,7 +17,7 @@ public class ContaBancariaService {
         this.repository = ContaBancariaRepositoryImpl.getInstance();
     }
 
-    public void cadastrarConta(String numero, int tipo) {
+    public void cadastrarConta(String numero, double saldo, int tipo) {
         String numeroNormalizado = normalizarNumeroConta(numero);
         
         if (repository.existsByNumero(numeroNormalizado)) {
@@ -28,7 +28,7 @@ public class ContaBancariaService {
         if (tipo == 1) {
             novaConta = new ContaBancaria(numeroNormalizado);
         } else if (tipo == 2) {
-            novaConta = new ContaPoupanca(numeroNormalizado);
+            novaConta = new ContaPoupanca(numeroNormalizado, saldo);
         } else if (tipo == 3) {
             novaConta = new ContaBonus(numeroNormalizado);
         } else {
