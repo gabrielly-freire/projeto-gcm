@@ -118,9 +118,20 @@ public class ContaBancariaService {
     }
 
     private void verificarSaldoBancarioSuficiente(ContaBancaria contaBancaria, double valor) {
-        if (valor > contaBancaria.getSaldo()) {
+        double saldoAposOperacao = contaBancaria.getSaldo() - valor;
+        if (saldoAposOperacao < saldoMinimoPermitido(contaBancaria)) {
             throw new SaldoInsuficienteException();
         }
+    }
+
+    private double saldoMinimoPermitido(ContaBancaria contaBancaria) {
+        if (contaBancaria instanceof ContaPoupanca) {
+            return 0.0;
+        }
+        if (contaBancaria instanceof ContaBonus || contaBancaria.getClass().equals(ContaBancaria.class)) {
+            return -1000.0;
+        }
+        return 0.0;
     }
 
     private ContaBancaria verificarContaExistente(String numeroConta) {
