@@ -15,7 +15,7 @@ public class ContaBancariaService {
         repository = ContaBancariaRepositoryImpl.getInstance();
     }
 
-    public void cadastrarConta(String numero){
+    public void cadastrarConta(String numero, double saldoInicial){
         if (numero == null || numero.trim().isEmpty()) {
             throw new IllegalArgumentException("Número da conta é obrigatório.");
         }
@@ -25,7 +25,7 @@ public class ContaBancariaService {
         }
 
         ContaBancaria novaConta = new ContaBancaria(numero);
-        novaConta.setSaldo(0.0);
+        novaConta.setSaldo(saldoInicial);
 
         repository.save(novaConta);
     }

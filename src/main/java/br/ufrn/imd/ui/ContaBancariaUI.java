@@ -130,7 +130,9 @@ public class ContaBancariaUI {
         System.out.print("Número da conta: ");
         String numeroConta = scanner.nextLine();
 
-        contaBancariaService.cadastrarConta(numeroConta);
+        System.out.print("Saldo inicial da conta: ");
+        double saldoInicial = scanner.nextDouble();
+        contaBancariaService.cadastrarConta(numeroConta,saldoInicial);
 
         System.out.println("Conta criada com sucesso!");
     }
