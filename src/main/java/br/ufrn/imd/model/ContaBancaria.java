@@ -30,6 +30,19 @@ public class ContaBancaria {
         return this;
     }
 
+    public void creditar(double valor) {
+        setSaldo(getSaldo() + valor);
+    }
+
+    public void debitar(double valor) {
+        setSaldo(getSaldo() - valor);
+    }
+
+    public void transferirPara(ContaBancaria destino, double valor) {
+        debitar(valor);
+        destino.creditar(valor);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
