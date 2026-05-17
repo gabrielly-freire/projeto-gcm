@@ -4,6 +4,8 @@ import br.ufrn.imd.exception.ContaBancariaNaoEncontradaException;
 import br.ufrn.imd.exception.ContaJaCadastradaException;
 import br.ufrn.imd.exception.SaldoInsuficienteException;
 import br.ufrn.imd.model.ContaBancaria;
+import br.ufrn.imd.model.ContaBonus;
+import br.ufrn.imd.model.ContaPoupanca;
 import br.ufrn.imd.repository.ContaBancariaRepository;
 import br.ufrn.imd.repository.ContaBancariaRepositoryImpl;
 
@@ -12,63 +14,104 @@ public class ContaBancariaService {
     private ContaBancariaRepository repository;
 
     public ContaBancariaService() {
-        repository = ContaBancariaRepositoryImpl.getInstance();
+        this.repository = ContaBancariaRepositoryImpl.getInstance();
     }
 
-    public void cadastrarConta(String numero){
-        if (numero == null || numero.trim().isEmpty()) {
-            throw new IllegalArgumentException("Número da conta é obrigatório.");
+    public void cadastrarConta(String numero, int tipo) {
+        String numeroNormalizado = normalizarNumeroConta(numero);
+        
+        if (repository.existsByNumero(numeroNormalizado)) {
+            throw new ContaJaCadastradaException(numeroNormalizado);
         }
 
-        if (repository.existsByNumero(numero)) {
-            throw new ContaJaCadastradaException(numero);
+        ContaBancaria novaConta;
+        if (tipo == 1) {
+            novaConta = new ContaBancaria(numeroNormalizado);
+        } else if (tipo == 2) {
+            novaConta = new ContaPoupanca(numeroNormalizado);
+        } else if (tipo == 3) {
+            novaConta = new ContaBonus(numeroNormalizado);
+        } else {
+            throw new IllegalArgumentException("Tipo de conta inválido.");
         }
-
-        ContaBancaria novaConta = new ContaBancaria(numero);
-        novaConta.setSaldo(0.0);
 
         repository.save(novaConta);
     }
 
-    public double consultarSaldo(String numeroConta){
-        ContaBancaria conta = verificarContaExistente(numeroConta);
-
-        return conta.getSaldo();
+    public double consultarSaldo(String numeroConta) {
+        return verificarContaExistente(numeroConta).getSaldo();
     }
 
-    public void debitar(String numeroConta, double valor){
+    public void debitar(String numeroConta, double valor) {
         ContaBancaria conta = verificarContaExistente(numeroConta);
 
         verificarValidadeValor(valor);
-
         verificarSaldoBancarioSuficiente(conta, valor);
 
-        conta.setSaldo(conta.getSaldo() - valor);
+        conta.debitar(valor);
         repository.save(conta);
     }
 
-    public void creditar(String numeroConta, double valor){
+    public void creditar(String numeroConta, double valor) {
         ContaBancaria conta = verificarContaExistente(numeroConta);
 
         verificarValidadeValor(valor);
 
-        conta.setSaldo(conta.getSaldo() + valor);
+        conta.creditar(valor);
         repository.save(conta);
     }
 
     public void transferir(String numeroContaOrigem, String numeroContaDestino, Double valor) {
         verificarValidadeValor(valor);
 
+        if (numeroContaOrigem.equals(numeroContaDestino)) {
+            throw new IllegalArgumentException("Conta de origem e destino não podem ser a mesma.");
+        }
+
         ContaBancaria contaOrigem = verificarContaExistente(numeroContaOrigem);
         ContaBancaria contaDestino = verificarContaExistente(numeroContaDestino);
 
         verificarSaldoBancarioSuficiente(contaOrigem, valor);
 
-        contaOrigem.setSaldo(contaOrigem.getSaldo() - valor);
-        contaDestino.setSaldo(contaDestino.getSaldo() + valor);
+        contaOrigem.transferirPara(contaDestino, valor);
+
+        repository.save(contaOrigem);
+        repository.save(contaDestino);
     }
 
-    private void verificarValidadeValor(Double valor) {
+    public void renderJuros(String numeroConta, double taxa) {
+        ContaBancaria conta = verificarContaExistente(numeroConta);
+
+        if (conta instanceof ContaPoupanca) {
+            ((ContaPoupanca) conta).renderJuros(taxa);
+            repository.save(conta);
+        } else {
+            throw new IllegalArgumentException("A conta não é do tipo poupança.");
+        }
+    }
+
+    public int getPontuacao(String numeroConta) {
+        ContaBancaria conta = verificarContaExistente(numeroConta);
+        if (!(conta instanceof ContaBonus bonus)) {
+            throw new IllegalArgumentException("A conta não é do tipo bônus.");
+        }
+        return bonus.getPontuacao();
+    }
+
+    public boolean isContaPoupanca(String numeroConta) {
+        return verificarContaExistente(numeroConta) instanceof ContaPoupanca;
+    }
+
+    public boolean isContaBonus(String numeroConta) {
+        return verificarContaExistente(numeroConta) instanceof ContaBonus;
+    }
+
+    public boolean isContaBancaria(String numeroConta) {
+        ContaBancaria conta = verificarContaExistente(numeroConta);
+        return conta.getClass().equals(ContaBancaria.class);
+    }
+
+    private void verificarValidadeValor(double valor) {
         if (valor <= 0) {
             throw new IllegalArgumentException("Valor deve ser maior que zero");
         }
@@ -88,6 +131,13 @@ public class ContaBancariaService {
         }
 
         return conta;
+    }
+
+    private String normalizarNumeroConta(String numeroConta) {
+        if (numeroConta == null || numeroConta.trim().isEmpty()) {
+            throw new IllegalArgumentException("Número da conta é obrigatório.");
+        }
+        return numeroConta.trim();
     }
 
 }
