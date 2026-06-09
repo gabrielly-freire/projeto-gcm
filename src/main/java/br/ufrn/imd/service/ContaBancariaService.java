@@ -8,7 +8,9 @@ import br.ufrn.imd.model.ContaBonus;
 import br.ufrn.imd.model.ContaPoupanca;
 import br.ufrn.imd.repository.ContaBancariaRepository;
 import br.ufrn.imd.repository.ContaBancariaRepositoryImpl;
+import org.springframework.stereotype.Service;
 
+@Service
 public class ContaBancariaService {
 
     private ContaBancariaRepository repository;
@@ -24,16 +26,12 @@ public class ContaBancariaService {
             throw new ContaJaCadastradaException(numeroNormalizado);
         }
 
-        ContaBancaria novaConta;
-        if (tipo == 1) {
-            novaConta = new ContaBancaria(numeroNormalizado);
-        } else if (tipo == 2) {
-            novaConta = new ContaPoupanca(numeroNormalizado, saldo);
-        } else if (tipo == 3) {
-            novaConta = new ContaBonus(numeroNormalizado);
-        } else {
-            throw new IllegalArgumentException("Tipo de conta inválido.");
-        }
+        ContaBancaria novaConta = switch (tipo) {
+            case 1 -> new ContaBancaria(numeroNormalizado);
+            case 2 -> new ContaPoupanca(numeroNormalizado, saldo);
+            case 3 -> new ContaBonus(numeroNormalizado);
+            default -> throw new IllegalArgumentException("Tipo de conta inválido.");
+        };
 
         repository.save(novaConta);
     }
@@ -82,9 +80,9 @@ public class ContaBancariaService {
     public void renderJuros(String numeroConta, double taxa) {
         ContaBancaria conta = verificarContaExistente(numeroConta);
 
-        if (conta instanceof ContaPoupanca) {
-            ((ContaPoupanca) conta).renderJuros(taxa);
-            repository.save(conta);
+        if (conta instanceof ContaPoupanca poupanca) {
+            poupanca.renderJuros(taxa);
+            repository.save(poupanca);
         } else {
             throw new IllegalArgumentException("A conta não é do tipo poupança.");
         }
@@ -109,6 +107,10 @@ public class ContaBancariaService {
     public boolean isContaBancaria(String numeroConta) {
         ContaBancaria conta = verificarContaExistente(numeroConta);
         return conta.getClass().equals(ContaBancaria.class);
+    }
+
+    public ContaBancaria getConta(String numeroConta) {
+        return verificarContaExistente(numeroConta);
     }
 
     private void verificarValidadeValor(double valor) {
