@@ -79,6 +79,7 @@ public class ContaBancariaService {
 
     public void renderJuros(String numeroConta, double taxa) {
         ContaBancaria conta = verificarContaExistente(numeroConta);
+        verificarValidadeValor(taxa);
 
         if (conta instanceof ContaPoupanca poupanca) {
             poupanca.renderJuros(taxa);
