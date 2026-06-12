@@ -19,7 +19,7 @@ public class ContaBancariaService {
         this.repository = ContaBancariaRepositoryImpl.getInstance();
     }
 
-    public void cadastrarConta(String numero, double saldo, int tipo) {
+    public ContaBancaria cadastrarConta(String numero, double saldo, int tipo) {
         String numeroNormalizado = normalizarNumeroConta(numero);
         
         if (repository.existsByNumero(numeroNormalizado)) {
@@ -33,7 +33,7 @@ public class ContaBancariaService {
             default -> throw new IllegalArgumentException("Tipo de conta inválido.");
         };
 
-        repository.save(novaConta);
+        return repository.save(novaConta);
     }
 
     public double consultarSaldo(String numeroConta) {
