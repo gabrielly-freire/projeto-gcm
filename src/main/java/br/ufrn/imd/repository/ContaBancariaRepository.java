@@ -12,5 +12,5 @@ public interface ContaBancariaRepository {
 
     boolean existsByNumero(String numero);
 
-    void save(ContaBancaria conta);
+    ContaBancaria save(ContaBancaria conta);
 }
