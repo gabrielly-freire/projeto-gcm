@@ -108,7 +108,14 @@ public class ContaBancariaUI {
         int tipo = scanner.nextInt();
         scanner.nextLine();
 
-        bancarioService.cadastrarConta(numero, tipo);
+        double saldo = 0.0;
+        if (tipo == 2) {
+            System.out.print("Saldo inicial: ");
+            saldo = scanner.nextDouble();
+            scanner.nextLine();
+        }
+
+        bancarioService.cadastrarConta(numero, saldo, tipo);
         if (tipo == 1) {
             System.out.println("Conta Corrente criada com sucesso!");
         } else if (tipo == 2) {

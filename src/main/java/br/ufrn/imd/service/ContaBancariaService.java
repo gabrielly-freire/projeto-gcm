@@ -8,7 +8,9 @@ import br.ufrn.imd.model.ContaBonus;
 import br.ufrn.imd.model.ContaPoupanca;
 import br.ufrn.imd.repository.ContaBancariaRepository;
 import br.ufrn.imd.repository.ContaBancariaRepositoryImpl;
+import org.springframework.stereotype.Service;
 
+@Service
 public class ContaBancariaService {
 
     private ContaBancariaRepository repository;
@@ -17,25 +19,21 @@ public class ContaBancariaService {
         this.repository = ContaBancariaRepositoryImpl.getInstance();
     }
 
-    public void cadastrarConta(String numero, int tipo) {
+    public ContaBancaria cadastrarConta(String numero, double saldo, int tipo) {
         String numeroNormalizado = normalizarNumeroConta(numero);
         
         if (repository.existsByNumero(numeroNormalizado)) {
             throw new ContaJaCadastradaException(numeroNormalizado);
         }
 
-        ContaBancaria novaConta;
-        if (tipo == 1) {
-            novaConta = new ContaBancaria(numeroNormalizado);
-        } else if (tipo == 2) {
-            novaConta = new ContaPoupanca(numeroNormalizado);
-        } else if (tipo == 3) {
-            novaConta = new ContaBonus(numeroNormalizado);
-        } else {
-            throw new IllegalArgumentException("Tipo de conta inválido.");
-        }
+        ContaBancaria novaConta = switch (tipo) {
+            case 1 -> new ContaBancaria(numeroNormalizado);
+            case 2 -> new ContaPoupanca(numeroNormalizado, saldo);
+            case 3 -> new ContaBonus(numeroNormalizado);
+            default -> throw new IllegalArgumentException("Tipo de conta inválido.");
+        };
 
-        repository.save(novaConta);
+        return repository.save(novaConta);
     }
 
     public double consultarSaldo(String numeroConta) {
@@ -81,10 +79,11 @@ public class ContaBancariaService {
 
     public void renderJuros(String numeroConta, double taxa) {
         ContaBancaria conta = verificarContaExistente(numeroConta);
+        verificarValidadeValor(taxa);
 
-        if (conta instanceof ContaPoupanca) {
-            ((ContaPoupanca) conta).renderJuros(taxa);
-            repository.save(conta);
+        if (conta instanceof ContaPoupanca poupanca) {
+            poupanca.renderJuros(taxa);
+            repository.save(poupanca);
         } else {
             throw new IllegalArgumentException("A conta não é do tipo poupança.");
         }
@@ -111,6 +110,10 @@ public class ContaBancariaService {
         return conta.getClass().equals(ContaBancaria.class);
     }
 
+    public ContaBancaria getConta(String numeroConta) {
+        return verificarContaExistente(numeroConta);
+    }
+
     private void verificarValidadeValor(double valor) {
         if (valor <= 0) {
             throw new IllegalArgumentException("Valor deve ser maior que zero");
@@ -118,9 +121,20 @@ public class ContaBancariaService {
     }
 
     private void verificarSaldoBancarioSuficiente(ContaBancaria contaBancaria, double valor) {
-        if (valor > contaBancaria.getSaldo()) {
+        double saldoAposOperacao = contaBancaria.getSaldo() - valor;
+        if (saldoAposOperacao < saldoMinimoPermitido(contaBancaria)) {
             throw new SaldoInsuficienteException();
         }
+    }
+
+    private double saldoMinimoPermitido(ContaBancaria contaBancaria) {
+        if (contaBancaria instanceof ContaPoupanca) {
+            return 0.0;
+        }
+        if (contaBancaria instanceof ContaBonus || contaBancaria.getClass().equals(ContaBancaria.class)) {
+            return -1000.0;
+        }
+        return 0.0;
     }
 
     private ContaBancaria verificarContaExistente(String numeroConta) {
