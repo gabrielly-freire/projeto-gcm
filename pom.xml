@@ -28,47 +28,29 @@
 
     <dependencies>
         <dependency>
-<<<<<<< HEAD
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-=======
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
             <version>2.8.8</version>
->>>>>>> bd266a734af834a70eb6d5321fcbbf309b8ae1e9
         </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
-<<<<<<< HEAD
-            <artifactId>spring-boot-starter-test</artifactId>
-=======
             <artifactId>spring-boot-starter-webmvc</artifactId>
         </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-webmvc-test</artifactId>
->>>>>>> bd266a734af834a70eb6d5321fcbbf309b8ae1e9
             <scope>test</scope>
         </dependency>
     </dependencies>
 
     <build>
         <plugins>
-<<<<<<< HEAD
-            <configure>
-                <plugin>
-                    <groupId>org.springframework.boot</groupId>
-                    <artifactId>spring-boot-maven-plugin</artifactId>
-                </plugin>
-            </configure>
-=======
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
->>>>>>> bd266a734af834a70eb6d5321fcbbf309b8ae1e9
         </plugins>
     </build>
 
