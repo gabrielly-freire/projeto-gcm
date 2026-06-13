@@ -1,5 +1,6 @@
 package br.ufrn.imd.controller;
 
+import br.ufrn.imd.dto.InfoContaResponse;
 import br.ufrn.imd.dto.CadastrarContaRequest;
 import br.ufrn.imd.dto.RendimentoRequest;
 import br.ufrn.imd.dto.TransferenciaRequest;
@@ -11,6 +12,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -38,18 +40,33 @@ public class BancoController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @Operation(summary = "Buscar conta", description = "Retorna os dados de uma conta pelo número")
+    @Operation(summary = "Consultar Conta", description = "Retorna os dados de uma conta, exibindo Tipo, Número, Saldo e Bônus")
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Conta encontrada"),
         @ApiResponse(responseCode = "404", description = "Conta não encontrada")
     })
     @GetMapping("/{id}")
-    public ResponseEntity<ContaBancaria> getConta(
+    public ResponseEntity<br.ufrn.imd.dto.InfoContaResponse> consultarConta(
             @Parameter(description = "Número da conta bancária") @PathVariable String id) {
-        ContaBancaria contaBancaria = contaBancariaService.getConta(id);
-        return ResponseEntity.ok(contaBancaria);
-    }
+        
+        ContaBancaria conta = contaBancariaService.getConta(id);
+        
+        String tipoStr = "Simples";
+        Integer bonus = null;
 
+        if (contaBancariaService.isContaPoupanca(id)) {
+            tipoStr = "Poupança";
+        } else if (contaBancariaService.isContaBonus(id)) {
+            tipoStr = "Bônus";
+            bonus = contaBancariaService.getPontuacao(id);
+        }
+
+        br.ufrn.imd.dto.InfoContaResponse response = new br.ufrn.imd.dto.InfoContaResponse(
+            tipoStr, conta.getNumero(), conta.getSaldo(), bonus
+        );
+
+        return ResponseEntity.ok(response);
+    }
     @Operation(summary = "Consultar saldo", description = "Retorna o saldo atual de uma conta")
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Saldo retornado com sucesso"),
