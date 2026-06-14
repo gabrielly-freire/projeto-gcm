@@ -37,11 +37,12 @@ public class ContaBancariaRepositoryImpl implements ContaBancariaRepository {
         return null;
     }
 
-    public void save(ContaBancaria conta) {
+    public ContaBancaria save(ContaBancaria conta) {
         if (contas.contains(conta)) {
         contas.remove(conta);
     }
         contas.add(conta);
+        return conta;
     }
 
     public boolean existsByNumero(String numero) {
