@@ -23,7 +23,7 @@ public class ContaBonus extends ContaBancaria {
     @Override
     public void creditar(double valor) {
         super.creditar(valor);
-        adicionarPontos((int) (valor / 100));
+        adicionarPontos((int) (valor / 150));
     }
 
     @Override
