@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class ContaBancariaService {
 
+    private static final double SALDO_MINIMO_NEGATIVO = -1000.0;
+
     private ContaBancariaRepository repository;
 
     public ContaBancariaService() {
@@ -132,7 +134,7 @@ public class ContaBancariaService {
             return 0.0;
         }
         if (contaBancaria instanceof ContaBonus || contaBancaria.getClass().equals(ContaBancaria.class)) {
-            return -1000.0;
+            return SALDO_MINIMO_NEGATIVO;
         }
         return 0.0;
     }

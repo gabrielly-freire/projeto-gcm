@@ -28,7 +28,8 @@ public class BancoController {
         this.contaBancariaService = contaBancariaService;
     }
 
-    @Operation(summary = "Cadastrar conta", description = "Cria uma nova conta bancária. Tipo: 1 = Simples, 2 = Poupança, 3 = Bônus")
+    @Operation(summary = "Cadastrar conta", description = "Cria uma nova conta bancária. " +
+            "Tipo: 1 = Simples, 2 = Poupança, 3 = Bônus")
     @ApiResponses({
         @ApiResponse(responseCode = "201", description = "Conta cadastrada com sucesso"),
         @ApiResponse(responseCode = "400", description = "Dados inválidos ou tipo de conta inexistente"),
@@ -46,7 +47,7 @@ public class BancoController {
         @ApiResponse(responseCode = "404", description = "Conta não encontrada")
     })
     @GetMapping("/{id}")
-    public ResponseEntity<br.ufrn.imd.dto.InfoContaResponse> consultarConta(
+    public ResponseEntity<InfoContaResponse> consultarConta(
             @Parameter(description = "Número da conta bancária") @PathVariable String id) {
         
         ContaBancaria conta = contaBancariaService.getConta(id);
@@ -61,7 +62,7 @@ public class BancoController {
             bonus = contaBancariaService.getPontuacao(id);
         }
 
-        br.ufrn.imd.dto.InfoContaResponse response = new br.ufrn.imd.dto.InfoContaResponse(
+        InfoContaResponse response = new InfoContaResponse(
             tipoStr, conta.getNumero(), conta.getSaldo(), bonus
         );
 
@@ -93,7 +94,8 @@ public class BancoController {
         return ResponseEntity.ok().build();
     }
 
-    @Operation(summary = "Debitar valor", description = "Remove um valor do saldo da conta. Contas simples e bônus permitem saldo mínimo de -R$ 1000,00; poupança não permite saldo negativo")
+    @Operation(summary = "Debitar valor", description = "Remove um valor do saldo da conta. Contas simples " +
+            "e bônus permitem saldo mínimo de -R$ 1000,00; poupança não permite saldo negativo")
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Débito realizado com sucesso"),
         @ApiResponse(responseCode = "400", description = "Valor inválido ou saldo insuficiente"),
@@ -107,7 +109,8 @@ public class BancoController {
         return ResponseEntity.ok().build();
     }
 
-    @Operation(summary = "Transferir entre contas", description = "Transfere um valor de uma conta de origem para uma conta de destino. Origem e destino não podem ser a mesma conta")
+    @Operation(summary = "Transferir entre contas", description = "Transfere um valor de uma conta de origem para uma " +
+            "conta de destino. Origem e destino não podem ser a mesma conta")
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Transferência realizada com sucesso"),
         @ApiResponse(responseCode = "400", description = "Valor inválido, saldo insuficiente ou contas iguais"),
