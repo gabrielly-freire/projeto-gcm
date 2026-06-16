@@ -1,0 +1,39 @@
+name: pipeline ci para branch develop
+
+on:
+  push:
+    branches:
+      - develop
+  pull_request:
+    branches:
+      - develop
+    types: [closed]
+
+jobs:
+  ci-pipeline:
+    if: github.event_name == 'push' || github.event.pull_request.merged == true)
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: check do repositório
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: configuração da JDK 21
+      uses: actions/setup-java@v4
+      with:
+        java-version: '21'
+        distribution: 'temurin'
+
+    - name: resolver dependências com maven
+      run: mvn dependency:resolve
+
+    - name: buidar o projeto
+      run: mvn compile
+    
+    - name: verificação estática de código
+      run: mvn checkstyle:check pmd:check
+
+    - name: rodar testes unitários junit
+      run: mvn test
