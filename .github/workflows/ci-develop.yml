@@ -3,10 +3,10 @@ name: pipeline ci para branch develop
 on:
   push:
     branches:
-      - develop
+      - main
   pull_request:
     branches:
-      - develop
+      - main
     types: [closed]
 
 jobs:
