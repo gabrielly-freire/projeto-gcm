@@ -40,7 +40,7 @@ public class ContaBancariaUI {
             } catch (IllegalArgumentException e) {
                 System.out.println("Erro de validação: " + e.getMessage());
             } catch (Exception e) {
-                System.out.println("Erro inesperado. Tente novamente.");
+                System.out.println("Erro inesperado. Tente novamente mais tarde");
             }
 
         } while (opcao != 0);
@@ -94,7 +94,6 @@ public class ContaBancariaUI {
         double valor = scanner.nextDouble();
         scanner.nextLine();
 
-        // O método de transferência no Service bancário lida com as duas contas simultaneamente
         bancarioService.transferir(origem, destino, valor);
         System.out.println("Transferência realizada com sucesso!");
     }
