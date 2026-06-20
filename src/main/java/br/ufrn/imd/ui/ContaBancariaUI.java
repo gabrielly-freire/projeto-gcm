@@ -29,7 +29,7 @@ public class ContaBancariaUI {
                     case 5 -> renderJuros();
                     case 6 -> criarConta();
                     case 0 -> System.out.println("Saindo do sistema...");
-                    default -> System.out.println("Opção inválida!");
+                    default -> System.out.println("Opção inválida! Tente novamente");
                 }
             } catch (ContaBancariaNaoEncontradaException e) {
                 System.out.println("Erro: Conta não encontrada no sistema.");
