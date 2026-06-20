@@ -5,11 +5,11 @@ import br.ufrn.imd.model.ContaBancaria;
 import java.util.HashSet;
 import java.util.Set;
 
-public class ContaBancariaRepositoryImpl implements ContaBancariaRepository {
+public final class ContaBancariaRepositoryImpl implements ContaBancariaRepository {
 
     private static ContaBancariaRepositoryImpl instance;
 
-    private ContaBancariaRepositoryImpl() {}
+    private ContaBancariaRepositoryImpl() { }
 
     public static ContaBancariaRepositoryImpl getInstance() {
         if (instance == null) {

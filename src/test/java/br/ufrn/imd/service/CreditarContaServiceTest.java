@@ -64,9 +64,15 @@ class CreditarContaServiceTest {
     @Test
     void deve_AplicarBonificacaoCorretamente_Quando_ContaDoTipoBonus() {
         ContaBonus contaBonus = new ContaBonus("003");
+<<<<<<< HEAD
         contaBonus.setSaldo(0.0);
         ReflectionTestUtils.setField(contaBonus, "pontuacao", 0);
         when(repository.findByNumero("003")).thenReturn(contaBonus);
+=======
+
+        when(repository.findByNumero("003")).thenReturn(contaBonus);
+
+>>>>>>> main
         service.creditar("003", 100.0);
         assertThat(contaBonus.getPontuacao()).isEqualTo(10);
         verify(repository, times(1)).save(contaBonus);

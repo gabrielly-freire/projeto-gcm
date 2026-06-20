@@ -1,12 +1,16 @@
 package br.ufrn.imd.model;
 
 public class ContaBonus extends ContaBancaria {
-    
+
+    private static final int PONTUACAO_INICIAL = 10;
+    private static final int DIVISOR_PONTOS_CREDITO = 150;
+    private static final int DIVISOR_PONTOS_TRANSFERENCIA = 200;
+
     private int pontuacao;
 
     public ContaBonus(String numero) {
         super(numero);
-        this.pontuacao = 10;
+        this.pontuacao = PONTUACAO_INICIAL;
     }
 
     public int getPontuacao() {
@@ -23,7 +27,7 @@ public class ContaBonus extends ContaBancaria {
     @Override
     public void creditar(double valor) {
         super.creditar(valor);
-        adicionarPontos((int) (valor / 150));
+        adicionarPontos((int) (valor / DIVISOR_PONTOS_CREDITO));
     }
 
     @Override
@@ -31,6 +35,6 @@ public class ContaBonus extends ContaBancaria {
         this.setSaldo(this.getSaldo() - valor);
         destino.setSaldo(destino.getSaldo() + valor);
 
-        adicionarPontos((int) (valor / 200));
+        adicionarPontos((int) (valor / DIVISOR_PONTOS_TRANSFERENCIA));
     }
 }
