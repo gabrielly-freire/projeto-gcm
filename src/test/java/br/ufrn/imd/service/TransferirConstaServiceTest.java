@@ -50,12 +50,6 @@ class TransferirContaServiceTest {
 
     @Test
     void deve_LancarIllegalArgumentException_Quando_ValorDaTransferenciaForNegativo() {
-        ContaBancaria origem = new ContaBancaria("001", 200.0);
-        ContaBancaria destino = new ContaBancaria("002", 50.0);
-
-        when(repository.findByNumero("001")).thenReturn(origem);
-        when(repository.findByNumero("002")).thenReturn(destino);
-
         assertThatThrownBy(() -> service.transferir("001", "002", -50.0))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Valor deve ser maior que zero");
