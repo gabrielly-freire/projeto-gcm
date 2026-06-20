@@ -1,4 +1,4 @@
-name: CI - BG Bank
+name: CI main - BG Bank
 
 on:
   push:
@@ -14,11 +14,9 @@ env:
   JAVA_CACHE: 'maven'
 
 jobs:
-  ci-pipeline:
+  build:
+    name: Build
     runs-on: ubuntu-latest
-    permissions:
-      contents: write # precisa para criação da tag
-
     steps:
       - name: check do repositório
         uses: actions/checkout@v4
@@ -38,11 +36,55 @@ jobs:
       - name: buildar o projeto
         run: mvn compile --no-transfer-progress
 
+  static-analysis:
+    name: Análise Estática
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: check do repositório
+        uses: actions/checkout@v4
+
+      - name: configuração da JDK ${{ env.JAVA_VERSION }}
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: ${{ env.JAVA_DISTRIBUTION }}
+          cache: ${{ env.JAVA_CACHE }}
+
       - name: verificação estática de código
         run: mvn checkstyle:check pmd:check --no-transfer-progress
 
+  test:
+    name: Testes
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: check do repositório
+        uses: actions/checkout@v4
+
+      - name: configuração da JDK ${{ env.JAVA_VERSION }}
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: ${{ env.JAVA_DISTRIBUTION }}
+          cache: ${{ env.JAVA_CACHE }}
+
       - name: rodar testes unitários junit
         run: mvn test --no-transfer-progress
+
+  publish-tag:
+    name: Publicar Tag
+    runs-on: ubuntu-latest
+    needs: [static-analysis, test]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    permissions:
+      contents: write # necessário para a criação da tag
+
+    steps:
+      - name: check do repositório
+        uses: actions/checkout@v4
 
       - name: criar e publicar tag de build
         # Só cria a tag se for um evento de push E se esse push for especificamente na branch main
