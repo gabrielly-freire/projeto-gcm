@@ -9,8 +9,8 @@ import java.util.Scanner;
 
 public class ContaBancariaUI {
 
-    private static final Scanner scanner = new Scanner(System.in);
-    private static final ContaBancariaService bancarioService = new ContaBancariaService();
+    private static Scanner scanner = new Scanner(System.in);
+    private static ContaBancariaService bancarioService = new ContaBancariaService();
 
     public static void main(String[] args) {
         int opcao;
