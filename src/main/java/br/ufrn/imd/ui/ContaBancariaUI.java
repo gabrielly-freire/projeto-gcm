@@ -9,8 +9,8 @@ import java.util.Scanner;
 
 public class ContaBancariaUI {
 
-    private static final Scanner scanner = new Scanner(System.in);
-    private static final ContaBancariaService bancarioService = new ContaBancariaService();
+    private static Scanner scanner = new Scanner(System.in);
+    private static ContaBancariaService bancarioService = new ContaBancariaService();
 
     public static void main(String[] args) {
         int opcao;
@@ -29,7 +29,7 @@ public class ContaBancariaUI {
                     case 5 -> renderJuros();
                     case 6 -> criarConta();
                     case 0 -> System.out.println("Saindo do sistema...");
-                    default -> System.out.println("Opção inválida!");
+                    default -> System.out.println("Opção inválida! Tente novamente");
                 }
             } catch (ContaBancariaNaoEncontradaException e) {
                 System.out.println("Erro: Conta não encontrada no sistema.");
@@ -40,7 +40,7 @@ public class ContaBancariaUI {
             } catch (IllegalArgumentException e) {
                 System.out.println("Erro de validação: " + e.getMessage());
             } catch (Exception e) {
-                System.out.println("Erro inesperado. Tente novamente.");
+                System.out.println("Erro inesperado. Tente novamente mais tarde");
             }
 
         } while (opcao != 0);
@@ -94,7 +94,6 @@ public class ContaBancariaUI {
         double valor = scanner.nextDouble();
         scanner.nextLine();
 
-        // O método de transferência no Service bancário lida com as duas contas simultaneamente
         bancarioService.transferir(origem, destino, valor);
         System.out.println("Transferência realizada com sucesso!");
     }
