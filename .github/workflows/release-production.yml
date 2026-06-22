@@ -17,7 +17,7 @@ jobs:
     if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     steps:
-      - name: check do código
+      - name: checkout do código
         uses: actions/checkout@v4
 
       - name: configuração do Java
@@ -76,7 +76,7 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: build e push da imagem Docker
+      - name: build e Push da imagem Docker
         uses: docker/build-push-action@v5
         with:
           context: .
