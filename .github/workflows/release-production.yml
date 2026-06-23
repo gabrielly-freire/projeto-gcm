@@ -16,6 +16,9 @@ jobs:
   pipeline:
     if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
     steps:
       - name: checkout do código
         uses: actions/checkout@v4
