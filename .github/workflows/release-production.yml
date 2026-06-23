@@ -16,9 +16,15 @@ jobs:
   pipeline:
     if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
     steps:
       - name: checkout do código
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          persist-credentials: true
 
       - name: configuração do Java
         uses: actions/setup-java@v4
@@ -35,8 +41,6 @@ jobs:
       - name: calcular e criar tag rel
         id: rel-tag
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
           git fetch --tags
           
           HEAD_BRANCH="${{ github.event.pull_request.head.ref }}"
