@@ -3,8 +3,8 @@
 Projeto desenvolvido para a disciplina DIM0517 - GERÊNCIA DE CONFIGURAÇÃO E MUDANÇAS (UFRN).
 
 ## Equipe
-* **Ana Beatriz Camilo da Costa** - [BeatrizCamlo](https://github.com/BeatrizCamlo)
-* **Francisca Gabrielly Lopes Freire** - [gabrielly-freire](https://github.com/gabrielly-freire)
+* **Ana Beatriz Camilo da Costa** (20230081544) - [BeatrizCamlo](https://github.com/BeatrizCamlo)
+* **Francisca Gabrielly Lopes Freire** (20230034464) - [gabrielly-freire](https://github.com/gabrielly-freire)
 
 ## Stack Tecnológica
 * **Linguagem:** Java 21
