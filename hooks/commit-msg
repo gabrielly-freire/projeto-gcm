@@ -1,0 +1,28 @@
+#!/bin/bash
+
+COMMIT_MSG_FILE=$1
+COMMIT_MSG=$(cat "$COMMIT_MSG_FILE")
+
+GH_USER="gabrielly-freire"
+GH_REPO="projeto-gcm"
+
+if [[ ! "$COMMIT_MSG" =~ .*\ #[0-9]+$ ]]; then
+    echo "Erro: o corpo da mensagem não segue o padrão."
+    echo 'Padrão esperado: "tipo: descrição #NUM_ISSUE" (ex: "feat: ajuste no login #66")'
+    exit 1
+fi
+
+ISSUE_NUM=$(echo "$COMMIT_MSG" | grep -oE '#[0-9]+$' | cut -d'#' -f2)
+
+echo "Validando issue #$ISSUE_NUM no GitHub..."
+
+HTTP_CODE=$(curl -k -A "GitHub-Hook" -o /dev/null -s -w "%{http_code}" https://api.github.com/repos/$GH_USER/$GH_REPO/issues/$ISSUE_NUM)
+
+if [ "$HTTP_CODE" != "200" ]; then
+    echo "Erro: A issue #$ISSUE_NUM não foi encontrada ou não é acessível."
+    echo "Código de resposta da API: $HTTP_CODE"
+    exit 1
+fi
+
+echo "Commit aprovado!"
+exit 0
