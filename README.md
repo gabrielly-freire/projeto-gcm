@@ -33,6 +33,15 @@ docker pull beatrizcamilo/bg-bank:latest
 
 ---
 
+### Instrução para Git Hooks Locais
+
+Para a verificação local dos commits, entre no Git Bash, certifique-se que está na raiz do projeto e insira:
+
+**Para copiar e conceder permissão de execução**
+```bash
+chmod +x scripts/setup-hooks.sh && ./scripts/setup-hooks.sh
+```
+
 ### Execução via Docker (recomendado)
 
 **Usando a imagem do Docker Hub:**
