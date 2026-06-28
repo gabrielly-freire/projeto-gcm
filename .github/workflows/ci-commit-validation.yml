@@ -19,7 +19,9 @@ jobs:
           fetch-depth: 0
 
       - name: tornar hook executável
-        run: chmod +x hooks/commit-msg
+        run: |
+          sed -i 's/\r//' hooks/commit-msg
+          chmod +x hooks/commit-msg
 
       - name: validar mensagens de commit do PR
         run: |
