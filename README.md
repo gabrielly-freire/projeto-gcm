@@ -35,12 +35,17 @@ docker pull beatrizcamilo/bg-bank:latest
 
 ### Instrução para Git Hooks Locais
 
-Para a verificação local dos commits, entre no Git Bash, certifique-se que está na raiz do projeto e insira:
+Para ativar a verificação local dos commits, execute **uma única vez** na raiz do projeto:
 
-**Para copiar e conceder permissão de execução:**
 ```bash
-chmod +x scripts/setup-hooks.sh && ./scripts/setup-hooks.sh
+git config core.hooksPath hooks
 ```
+
+A partir daí, todo `git commit` será validado automaticamente pelo hook em `hooks/commit-msg`.
+
+**Regras de validação:**
+- A mensagem deve seguir o formato: `tipo: descrição #NUM_ISSUE` (ex: `feat: ajuste no login #66`)
+- O número da issue deve existir no repositório do GitHub
 
 ### Execução via Docker (recomendado)
 
