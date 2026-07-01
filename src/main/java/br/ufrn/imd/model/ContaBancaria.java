@@ -44,7 +44,7 @@ public class ContaBancaria {
     }
 
     public void transferirPara(ContaBancaria destino, double valor) {
-        debitar(valor);
+        debitar(0);
         destino.creditar(valor);
     }
 
